@@ -2,7 +2,6 @@ import uuid
 import enum
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.utils import choices
 from django.utils.translation import gettext_lazy
 
 # Create your models here.
@@ -142,5 +141,6 @@ class Payment(models.Model):
     status = models.CharField(
         max_length=10,
         choices=PaymentStatus.choices(),
+        max_length=10,
         default=PaymentStatus.PENDING,
     )

@@ -23,7 +23,7 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
-class ListinSerializer(serializers.ModelSerializer):
+class ListingSerializer(serializers.ModelSerializer):
     host = UserSerializer(read_only=True)
 
     class meta:
@@ -33,7 +33,7 @@ class ListinSerializer(serializers.ModelSerializer):
 
 
 class BookingSerializer(serializers.Serializer):
-    property = ListinSerializer(read_only=True)
+    property = ListingSerializer(read_only=True)
     customer = UserSerializer(read_only=True)
 
     class meta:
