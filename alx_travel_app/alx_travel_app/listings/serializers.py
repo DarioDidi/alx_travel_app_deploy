@@ -23,6 +23,7 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
+# class ListingSerializer(serializers.ModelSerializer):
 class ListingSerializer(serializers.ModelSerializer):
     host = UserSerializer(read_only=True)
 
@@ -32,7 +33,8 @@ class ListingSerializer(serializers.ModelSerializer):
         extra_kwargs = {"id": {"read_only": True}}
 
 
-class BookingSerializer(serializers.Serializer):
+# class BookingSerializer(serializers.Serializer):
+class BookingSerializer(serializers.ModelSerializer):
     property = ListingSerializer(read_only=True)
     customer = UserSerializer(read_only=True)
 
