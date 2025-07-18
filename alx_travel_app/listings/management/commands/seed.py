@@ -89,7 +89,7 @@ class Command(BaseCommand):
             ).days * property.price_per_night
 
             booking = Booking.objects.create(
-                property=property,
+                listing=property,
                 guest=guest,
                 check_in_date=check_in,
                 check_out_date=check_out,
@@ -107,7 +107,7 @@ class Command(BaseCommand):
                 guest = random.choice(guests)
 
                 review = Review.objects.create(
-                    property=property,
+                    listing=property,
                     author=guest,
                     rating=random.randint(1, 5),
                     comment=(

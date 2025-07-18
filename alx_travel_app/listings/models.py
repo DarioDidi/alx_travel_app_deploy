@@ -17,9 +17,6 @@ class UserRole(str, enum.Enum):
         return tuple((item.value, item.name) for item in cls)
 
 
-role = models.CharField(max_length=8, choices=UserRole.choices())
-
-
 class Users(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     first_name = models.CharField(blank=False, max_length=60)
@@ -27,6 +24,11 @@ class Users(AbstractUser):
     phone_number = models.CharField(blank=False, max_length=13)
     password = models.CharField(gettext_lazy("password"), max_length=128)
     email = models.EmailField(unique=True)
+    role = models.CharField(
+        max_length=8,
+        choices=UserRole.choices(),
+        default=UserRole.CUSTOMER.value,
+    )
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
@@ -68,31 +70,32 @@ class BookingStatus(enum.Enum):
         return tuple((item.value, item.name) for item in cls)
 
 
-status = models.CharField(
-    choices=BookingStatus.choices(), default=BookingStatus.PAYMENT_PENDING
-)
-
-
 class Booking(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    listing_id = models.ForeignKey(Listing, on_delete=models.CASCADE)
-    guest_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
+    guest = models.ForeignKey(Users, on_delete=models.CASCADE)
     check_in_date = models.DateTimeField()
     check_out_date = models.DateTimeField()
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    status = models.CharField(
+        max_length=20,
+        choices=BookingStatus.choices(),
+        default=BookingStatus.PAYMENT_PENDING,
+    )
+
     def __str__(self):
-        return f"Booking #{self.id} for {self.listing_id.title}"
+        return f"Booking #{self.id} for {self.listing.title}"
 
 
 class Review(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    listing_id = models.ForeignKey(
+    listing = models.ForeignKey(
         Listing, on_delete=models.CASCADE, related_name="reviews"
     )
-    author_id = models.ForeignKey(
+    author = models.ForeignKey(
         Users, on_delete=models.CASCADE, related_name="reviews"
     )
     rating = models.DecimalField(max_digits=2, decimal_places=1)
@@ -100,7 +103,7 @@ class Review(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Review by {self.author.username} for {self.listing_id.title}"
+        return f"Review by {self.author.username} for {self.listing.title}"
 
 
 class PaymentMethod(enum.Enum):
@@ -111,11 +114,6 @@ class PaymentMethod(enum.Enum):
     @classmethod
     def choices(cls):
         return tuple((item.value, item.name) for item in cls)
-
-
-payment_method = models.CharField(
-    max_length=15, choices=PaymentMethod.choices(), default=PaymentMethod.CARD
-)
 
 
 class PaymentStatus(enum.Enum):
@@ -132,15 +130,19 @@ class PaymentStatus(enum.Enum):
 
 class Payment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    booking_id = models.ForeignKey(
+    booking = models.ForeignKey(
         Booking, on_delete=models.CASCADE, related_name="payment"
     )
     transaction_date = models.DateTimeField(auto_now_add=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
 
+    payment_method = models.CharField(
+        max_length=15,
+        choices=PaymentMethod.choices(),
+        default=PaymentMethod.CARD,
+    )
     status = models.CharField(
         max_length=10,
         choices=PaymentStatus.choices(),
-        max_length=10,
         default=PaymentStatus.PENDING,
     )
