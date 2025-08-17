@@ -118,7 +118,7 @@ class PaymentMethod(enum.Enum):
 
 class PaymentStatus(enum.Enum):
     COMPLETED = "COMPLETED"
-    DECLINED = "DECLINED"
+    FAILED = "FAILED"
     PENDING = "PENDING"
     PROCESSING = "PROCESSING"
     REFUNDED = "REFUNDED"
@@ -135,6 +135,7 @@ class Payment(models.Model):
     )
     transaction_date = models.DateTimeField(auto_now_add=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
+    transaction_id = models.CharField(max_length=100, blank=True, null=True)
 
     payment_method = models.CharField(
         max_length=15,
