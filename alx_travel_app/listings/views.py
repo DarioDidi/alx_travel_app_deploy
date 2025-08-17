@@ -4,7 +4,7 @@ import requests
 from .permissions import IsBookingOwner
 from .serializers import ListingSerializer, BookingSerializer
 from .models import Listing, Booking, PaymentStatus, Payment
-from .tasks import send_verification_email
+from .tasks import send_confirmation_email
 
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -95,7 +95,7 @@ class VerifyView(APIView):
             payment.status = PaymentStatus.COMPLETED
 
             payment.save()
-            send_verification_email.delay(
+            send_confirmation_email.delay(
                 self.request.user.email, f"Payment:{tx_ref} successful")
 
             return Response({"message": "Payment successful"})
