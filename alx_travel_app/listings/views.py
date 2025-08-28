@@ -29,6 +29,13 @@ class BookingViewSet(viewsets.ModelViewSet):
     serializer_class = BookingSerializer
     permission_classes = [IsBookingOwner]
 
+    def create(self, validated_data):
+        booking = super().create(**validated_data)
+        mail = self.request.user.email
+        content = f"booking confirmed with id:{booking.id}"
+        send_confirmation_email.delay(mail, content)
+        return booking
+
     def get_queryset(self):
         return Booking.objects.filter(quest=self.request.user)
 

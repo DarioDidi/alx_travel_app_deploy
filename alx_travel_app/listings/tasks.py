@@ -3,12 +3,12 @@ from celery import shared_task
 
 
 @shared_task
-def send_confirmation_email(email_address, message):
-    """Sends an email when the payment has been submitted."""
+def send_notification_email(email_address, title, content):
+    """ email notification feature for bookings."""
 
     send_mail(
         "Payment verification",
-        f"\t{message}\n\nThank you!",
+        content,
         "support@example.com",
         [email_address],
         fail_silently=False,
