@@ -25,7 +25,6 @@ RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 AUTH_USER_MODEL = "listings.Users"
-# Application definition
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -34,7 +33,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # "corsheaders",
+    "corsheaders",
     "rest_framework",
     "drf_yasg",
     "listings",
