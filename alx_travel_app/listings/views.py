@@ -4,11 +4,12 @@ import requests
 from .permissions import IsBookingOwner
 from .serializers import ListingSerializer, BookingSerializer
 from .models import Listing, Booking, PaymentStatus, Payment
-from .tasks import send_confirmation_email
+from .tasks import send_notification_email
 
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -27,17 +28,18 @@ class ListingViewset(viewsets.ModelViewSet):
 
 class BookingViewSet(viewsets.ModelViewSet):
     serializer_class = BookingSerializer
-    permission_classes = [IsBookingOwner]
+    # permission_classes = [IsBookingOwner]
+    permission_classes = [IsAuthenticated]
 
     def create(self, validated_data):
         booking = super().create(**validated_data)
         mail = self.request.user.email
         content = f"booking confirmed with id:{booking.id}"
-        send_confirmation_email.delay(mail, content)
+        send_notification_email.delay(mail, content)
         return booking
 
     def get_queryset(self):
-        return Booking.objects.filter(quest=self.request.user)
+        return Booking.objects.filter(guest=self.request.user)
 
 
 class PayView(APIView):
@@ -102,7 +104,7 @@ class VerifyView(APIView):
             payment.status = PaymentStatus.COMPLETED
 
             payment.save()
-            send_confirmation_email.delay(
+            send_notification_email.delay(
                 self.request.user.email, f"Payment:{tx_ref} successful")
 
             return Response({"message": "Payment successful"})

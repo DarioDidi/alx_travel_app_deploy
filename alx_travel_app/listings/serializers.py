@@ -26,7 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
 class ListingSerializer(serializers.ModelSerializer):
     host = UserSerializer(read_only=True)
 
-    class meta:
+    class Meta:
         model = Listing
         fields = "__all__"
         extra_kwargs = {"id": {"read_only": True}}
@@ -36,7 +36,7 @@ class BookingSerializer(serializers.Serializer):
     property = ListingSerializer(read_only=True)
     customer = UserSerializer(read_only=True)
 
-    class meta:
+    class Meta:
         model = Booking
         fields = "__all__"
         extra_kwargs = {"id": {"read_only": True}}
