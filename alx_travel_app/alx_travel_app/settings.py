@@ -24,9 +24,11 @@ SECRET_KEY = (
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = []
+# DEBUG = True
+DEBUG = False
+
+ALLOWED_HOSTS = ['https://travelapp-dnz0.onrender.com']
 
 AUTH_USER_MODEL = "listings.Users"
 # Application definition
